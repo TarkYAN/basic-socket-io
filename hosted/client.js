@@ -9,12 +9,7 @@ const handleEditBox = () => {
         e.preventDefault();
 
         if(editBox.value){
-            const data = {
-                message: editBox.value,
-                channel: channelSelect.value,
-            }
-
-            socket.emit('chat message', data);
+            socket.emit('chat message', editBox.value);
             editBox.value = '';
         }
     });
@@ -32,23 +27,13 @@ const handleChannelSelect = () => {
 
     channelSelect.addEventListener('change', () => {
         messages.innerHTML = '';
-
-        switch(channelSelect.value){
-            case 'memes':
-                socket.off('general');
-                socket.on('memes', displayMessage);
-                break;
-            default:
-                socket.off('memes');
-                socket.on('general', displayMessage);
-                break;
-        }
+        socket.emit('room change', channelSelect.value);
     });
 }
 
 const init = () => {
     handleEditBox();
-    socket.on('general', displayMessage);
+    socket.on('chat message', displayMessage);
     handleChannelSelect();
 };
 
